@@ -8,7 +8,7 @@
     <property name="system.test.dir" value="system-test"/>
     <property name="lib.dir" value="lib"/>
     <path id="classpath">
-        <pathelement location="${build.dir.dir}"/>
+        <pathelement location="${build.prod.dir}"/>
         <pathelement location="${build.test.dir}"/>
         <fileset dir="${lib.dir}" includes="*.jar"/>
     </path>
@@ -48,6 +48,32 @@
     <target name="run" depends="jar">
 
         <java jar="${build.jar.dir}/Encrypt.jar" fork="true" />
+
+    </target>
+
+    <target name="compile-unit-tests">
+
+        <javac srcdir="${unit.test.dir}"
+               destdir="${build.test.dir}" classpathref="classpath"/>
+
+    </target>
+
+    <target name="compile-system-tests">
+
+        <javac srcdir="${system.test.dir}"
+               destdir="${build.test.dir}" classpathref="classpath"/>
+
+    </target>
+
+    <target name="run-unit-tests" depends="compile, compile-unit-tests">
+
+        <junit printsummary="yes">
+            <classpath refid="classpath" />
+            <formatter type="brief" usefile="false" />
+            <batchtest fork ="yes" todir="${unit.test.report.dir}">
+                    <fileset dir="unit-test/" includes="**/*Test.java"/>
+            </batchtest>
+        </junit>
 
     </target>
 
