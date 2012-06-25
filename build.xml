@@ -7,6 +7,8 @@
     <property name="unit.test.dir" value="unit-test"/>
     <property name="system.test.dir" value="system-test"/>
     <property name="lib.dir" value="lib"/>
+    <property name="test.report.dir" value="${build.dir}/junitreport"/>
+    <property name="unit.test.report.dir" value="${build.dir}/junitreport/unit-test"/>
     <path id="classpath">
         <pathelement location="${build.prod.dir}"/>
         <pathelement location="${build.test.dir}"/>
@@ -67,12 +69,16 @@
 
     <target name="run-unit-tests" depends="compile, compile-unit-tests">
 
+        <mkdir dir="${test.report.dir}"/>
+
+        <mkdir dir="${unit.test.report.dir}"/>
+
         <junit printsummary="yes"
                errorProperty="test.failed" failureProperty="test.failed">
 
             <classpath refid="classpath" />
 
-            <formatter type="brief" usefile="false" />
+            <formatter type="xml" />
 
             <batchtest fork ="yes" todir="${unit.test.report.dir}">
                     <fileset dir="unit-test/" includes="**/*Test.java"/>
@@ -80,6 +86,11 @@
 
 
         </junit>
+
+        <junitreport todir="${unit.test.report.dir}">
+            <fileset dir="${unit.test.report.dir}" includes="TEST-*.xml" />
+            <report todir="${unit.test.report.dir}" />
+        </junitreport>
 
         <fail message="Unit tests failed. Check log and/or reports."
               if="test.failed" />
