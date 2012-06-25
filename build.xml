@@ -9,6 +9,8 @@
     <property name="lib.dir" value="lib"/>
     <property name="test.report.dir" value="${build.dir}/junitreport"/>
     <property name="unit.test.report.dir" value="${build.dir}/junitreport/unit-test"/>
+    <property name="test.report.dir" value="${build.dir}/junitreport"/>
+    <property name="system.test.report.dir" value="${build.dir}/junitreport/system-test"/>
     <path id="classpath">
         <pathelement location="${build.prod.dir}"/>
         <pathelement location="${build.test.dir}"/>
@@ -39,7 +41,7 @@
 
     </target>
 
-    <target name="jar" depends="compile">
+    <target name="jar" depends="compile, run-unit-tests, run-system-tests">
         <jar destfile="${build.jar.dir}/Encrypt.jar" basedir="${build.prod.dir}">
             <manifest>
                 <attribute name="Main-Class" value="com.develogical.crypto.Encrypt" />
@@ -93,6 +95,36 @@
         </junitreport>
 
         <fail message="Unit tests failed. Check log and/or reports."
+              if="test.failed" />
+
+    </target>
+
+    <target name="run-system-tests" depends="compile, compile-system-tests">
+
+        <mkdir dir="${test.report.dir}"/>
+
+        <mkdir dir="${system.test.report.dir}"/>
+
+        <junit printsummary="yes"
+               errorProperty="test.failed" failureProperty="test.failed">
+
+            <classpath refid="classpath" />
+
+            <formatter type="xml" />
+
+            <batchtest fork ="yes" todir="${system.test.report.dir}">
+                <fileset dir="system-test/" includes="**/*Test.java"/>
+            </batchtest>
+
+
+        </junit>
+
+        <junitreport todir="${system.test.report.dir}">
+            <fileset dir="${system.test.report.dir}" includes="TEST-*.xml" />
+            <report todir="${system.test.report.dir}" />
+        </junitreport>
+
+        <fail message="System tests failed. Check log and/or reports."
               if="test.failed" />
 
     </target>
