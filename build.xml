@@ -13,7 +13,13 @@
         <fileset dir="${lib.dir}" includes="*.jar"/>
     </path>
 
-    <target name="prepare">
+    <target name="clean" description="Removes previous build">
+        <delete verbose="true">
+            <fileset dir="${build.dir}"/>
+        </delete>
+    </target>
+
+    <target name="prepare" depends="clean">
         <mkdir dir="${build.dir}"/>
         <mkdir dir="${build.prod.dir}"/>
         <mkdir dir="${build.test.dir}"/>
@@ -37,6 +43,12 @@
                 <attribute name="Main-Class" value="com.develogical.crypto.Encrypt" />
             </manifest>
         </jar>
+    </target>
+
+    <target name="run" depends="jar">
+
+        <java jar="${build.jar.dir}/Encrypt.jar" fork="true" />
+
     </target>
 
 </project>
